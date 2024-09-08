@@ -1,5 +1,4 @@
 ﻿const bcrypt = require("bcryptjs");
-//const db = require("../db/queries");
 const { validationResult } = require("express-validator");
 const myValidationResult = validationResult.withDefaults({
   formatter: (error) => error.msg,
@@ -11,7 +10,6 @@ const prisma = new PrismaClient();
 
 async function renderIndexPage(req, res) {
   try {
-    //const messages = await db.getAllMessages();
     res.render("index", { user: req.user });
   } catch {
     res.redirect("/");

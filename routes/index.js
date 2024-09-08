@@ -1,7 +1,6 @@
 ﻿const express = require("express");
 const router = express.Router();
 const { body } = require("express-validator");
-//const db = require("../db/queries");
 const passport = require("passport");
 const { PrismaClient } = require("@prisma/client");
 

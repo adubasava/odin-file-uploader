@@ -10,10 +10,8 @@ const expressSession = require("express-session");
 const { PrismaSessionStore } = require("@quixo3/prisma-session-store");
 const { PrismaClient } = require("@prisma/client");
 
-//const pgSession = require("connect-pg-simple")(session);
 const passport = require("passport");
 require("./auth/passport");
-//const pool = require("./db/pool");
 
 const app = express();
 
@@ -45,10 +43,12 @@ app.use(expressLayouts);
 app.use(express.static(__dirname + "/public"));
 
 const indexRouter = require("./routes/index");
+const fileRouter = require("./routes/file");
 
 app.use("/", indexRouter);
-//app.use("/log-in", indexRouter);
+app.use("/log-in", indexRouter);
 app.use("/register", indexRouter);
+app.use("/upload", fileRouter);
 
 const PORT = process.env.PORT || 3000;
 

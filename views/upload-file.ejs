@@ -1,0 +1,22 @@
+﻿<div class="m-auto w-full max-w-xs">
+  <form
+    action="/upload"
+    method="POST"
+    class="form"
+    enctype="multipart/form-data"
+  >
+    <div class="mb-4">
+      <label class="label" for="uploaded_file">Choose file:</label>
+      <input
+        class="input"
+        id="uploaded_file"
+        name="uploaded_file"
+        type="file"
+        required
+      />
+    </div>
+    <div class="flex items-center justify-center">
+      <button class="btn" type="submit">Upload</button>
+    </div>
+  </form>
+</div>
