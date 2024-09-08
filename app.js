@@ -44,11 +44,13 @@ app.use(express.static(__dirname + "/public"));
 
 const indexRouter = require("./routes/index");
 const fileRouter = require("./routes/file");
+const folderRouter = require("./routes/folder");
 
 app.use("/", indexRouter);
 app.use("/log-in", indexRouter);
 app.use("/register", indexRouter);
 app.use("/upload", fileRouter);
+app.use("/folders", folderRouter);
 
 const PORT = process.env.PORT || 3000;
 

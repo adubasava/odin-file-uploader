@@ -1,0 +1,13 @@
+﻿<h2 class="page-header">Edit Folder</h2>
+<form method="POST" action="/folders/<%= name %>/edit">
+  <div class="form-row">
+    <div class="form-item">
+      <label for="name">New folder name: </label>
+      <input id="name" type="text" name="name" value="<%= name %>" required />
+    </div>
+  </div>
+  <div class="form-row form-row-end btn-row">
+    <a class="btn btn-danger" href="/folders/<%= name %>">Cancel</a>
+    <button class="btn btn-primary" type="submit">Update</button>
+  </div>
+</form>
