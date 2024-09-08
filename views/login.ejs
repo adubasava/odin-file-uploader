@@ -1,0 +1,29 @@
+﻿<div class="m-auto w-full max-w-xs">
+  <form action="/log-in" method="POST" class="form">
+    <div class="mb-4">
+      <label class="label" for="email">Email</label>
+      <input
+        class="input"
+        id="email"
+        name="email"
+        autocomplete="email"
+        type="email"
+        value="<%= email %>"
+      />
+    </div>
+    <div class="mb-6">
+      <label class="label" for="current-password">Password</label>
+      <input
+        class="input"
+        id="current-password"
+        name="password"
+        autocomplete="current-password"
+        type="password"
+        value="<%= password %>"
+      />
+    </div>
+    <div class="flex items-center justify-center">
+      <button class="btn" type="submit">Sign in</button>
+    </div>
+  </form>
+</div>

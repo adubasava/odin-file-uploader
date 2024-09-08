@@ -1,0 +1,17 @@
+﻿<header>
+  <nav
+    class="flex items-center justify-between bg-primary-blackish p-4 text-white"
+  >
+    <a href="/">File Uploader</a>
+    <div class="flex gap-3 text-sm">           
+      <% if (user) {%>
+        <a href="/">Upload File</a>
+                     
+        <a href="/log-out">LOG OUT</a>
+        <% } else { %>
+          <a href="/register">Register</a> 
+          <a href="/">Log In</a> 
+        <%}%>
+    </div>
+  </nav>
+</header>

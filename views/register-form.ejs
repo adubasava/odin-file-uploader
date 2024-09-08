@@ -1,0 +1,43 @@
+﻿<div class="m-auto w-full max-w-xs">
+  <form action="/register" method="POST" class="form">
+    <div class="mb-4">
+      <label class="label" for="email">Email</label>
+      <input
+        class="input"
+        autocomplete="email"
+        id="email"
+        name="email"
+        type="email"
+        value="<%= email %>"
+        required
+      />
+    </div>
+    <div class="mb-4">
+      <label class="label" for="password">Password</label>
+      <input
+        class="input"
+        autocomplete="new-password"
+        id="password"
+        name="password"
+        type="password"
+        value="<%= password %>"
+        required
+      />
+    </div>
+    <div class="mb-6">
+      <label class="label" for="passwordConfirmation">Confirm Password</label>
+      <input
+        class="input"
+        autocomplete="new-password"
+        id="passwordConfirmation"
+        name="passwordConfirmation"
+        type="password"
+        value="<%= password %>"
+        required
+      />
+    </div>
+    <div class="flex items-center justify-center">
+      <button class="btn" type="submit">Register</button>
+    </div>
+  </form>
+</div>
