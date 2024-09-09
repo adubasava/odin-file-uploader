@@ -12,4 +12,6 @@ const fileController = require("../controllers/fileController");
 router.get("/", fileController.renderUploadFileForm);
 router.post("/", upload.single("uploaded_file"), fileController.uploadFile);
 
+router.get("/:id", fileController.showFileInfo);
+
 module.exports = router;

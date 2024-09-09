@@ -49,8 +49,9 @@ const folderRouter = require("./routes/folder");
 app.use("/", indexRouter);
 app.use("/log-in", indexRouter);
 app.use("/register", indexRouter);
-app.use("/upload", fileRouter);
 app.use("/folders", folderRouter);
+app.use("/upload", fileRouter);
+app.use("/files", fileRouter);
 
 const PORT = process.env.PORT || 3000;
 

@@ -5,6 +5,22 @@
 <a class="btn btn-primary" href="/folders/<%= folder.name %>/edit">Edit</a>
 <a class="btn btn-danger" href="/folders/<%= folder.name %>/delete">Delete</a>
 
+<% if (files.length > 0) { %>
+  <h2 class="page-header">Files in Folder</h2>
+  <div class="tour-grid-cards">
+      <% files.forEach(file => { %>
+        <div class="tour-card"> 
+          <div class="tour-title">
+            <%= file.name %>
+          </div> 
+          <div class="btn-row">
+            <a class="btn btn-small btn-primary" href="/files/<%= file.id %>">View Information</a>
+          </div>    
+        </div>
+      <% }); %>  
+    </div>
+  <% } %>
+
 <div class="tour-details-btn-grid">
   <a class="btn btn-info tour-details-category-btn" href="/folders"
     >Back to All Folders

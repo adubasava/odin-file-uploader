@@ -41,7 +41,15 @@ async function createNewFolder(req, res) {
         ownerId: req.user.id,
       },
     });
-    res.redirect("/");
+    const folders = await prisma.folder.findMany({
+      where: {
+        ownerId: req.user.id,
+      },
+    });
+    res.render("folders/index", {
+      folders: folders,
+      user: req.user,
+    });
   } catch {
     res.render("folders/new", {
       name: folderName,
@@ -53,6 +61,19 @@ async function createNewFolder(req, res) {
 
 async function renderFolder(req, res) {
   const folderName = req.params.id;
+  const folder = await prisma.folder.findUnique({
+    where: {
+      name_ownerId: {
+        name: folderName,
+        ownerId: req.user.id,
+      },
+    },
+  });
+  const files = await prisma.file.findMany({
+    where: {
+      folderId: folder.id,
+    },
+  });
   try {
     const folder = await prisma.folder.findUnique({
       where: {
@@ -62,9 +83,9 @@ async function renderFolder(req, res) {
         },
       },
     });
-    //const tours = await db.getTourByCategory(categoryName);
     res.render("folders/folder", {
       folder: folder,
+      files: files,
       user: req.user,
     });
   } catch (e) {
@@ -139,12 +160,6 @@ async function deleteFolderForm(req, res) {
 
 async function deleteFolder(req, res) {
   const folderName = req.params.id;
-  const folders = await prisma.folder.findMany({
-    where: {
-      ownerId: req.user.id,
-    },
-  });
-  //const tours = await db.getTourByCategory(categoryName);
   try {
     await prisma.folder.delete({
       where: {
@@ -154,7 +169,15 @@ async function deleteFolder(req, res) {
         },
       },
     });
-    res.redirect("/");
+    const folders = await prisma.folder.findMany({
+      where: {
+        ownerId: req.user.id,
+      },
+    });
+    res.render("folders/index", {
+      folders: folders,
+      user: req.user,
+    });
   } catch (e) {
     console.log(e);
     res.render("folders/index", {

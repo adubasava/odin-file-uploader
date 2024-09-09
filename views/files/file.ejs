@@ -1,0 +1,19 @@
+﻿<h2 class="page-header"><%= file.name %></h2>
+<h2 class="page-header"><%= file.size %></h2>
+<h2 class="page-header"><%= file.uploadTime.toLocaleString() %></h2>
+
+<a
+  class="btn btn-primary"
+  download="<%= file.name %>"
+  href="<%= file.url %>"
+  target="_blank"
+  >Download</a
+>
+
+<div class="tour-details-btn-grid">
+  <a
+    class="btn btn-info tour-details-category-btn"
+    href="/folders/<%= folder.name %>"
+    >Back to All Folders
+  </a>
+</div>

@@ -1,0 +1,28 @@
+﻿@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  font-family: 'Barlow Semi Condensed', sans-serif;
+  font-size: 26px;
+  background-color: hsl(210, 46%, 95%);
+  min-height: 100vh;
+}
+
+@layer components {
+  .btn {
+    @apply m-2 rounded-lg bg-primary-dark px-3 py-1 text-2xl text-white hover:bg-slate-400 focus:outline-none active:bg-slate-400;
+  }
+
+  .label {
+    @apply mb-2 block text-lg font-bold text-primary-dark;
+  }
+
+  .input {
+    @apply w-full appearance-none rounded-lg border px-3 py-2 leading-tight text-primary-dark shadow;
+  }
+
+  .form {
+    @apply mb-4 mt-8 rounded-lg bg-white px-8 pb-8 pt-6 shadow-md;
+  }
+}

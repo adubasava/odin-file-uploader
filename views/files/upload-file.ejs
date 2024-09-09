@@ -6,6 +6,14 @@
     enctype="multipart/form-data"
   >
     <div class="mb-4">
+      <label class="label" for="file_folder">Choose folder:</label>
+      <select name="file_folder" id="file_folder">      
+      <% folders.forEach(folder => { %>
+        <option value="<%= folder.name %>"><%= folder.name %></option>       
+      <% }) %> 
+      </select>
+    </div>
+    <div class="mb-4">
       <label class="label" for="uploaded_file">Choose file:</label>
       <input
         class="input"
