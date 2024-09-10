@@ -1,37 +1,23 @@
-﻿const { validationResult } = require('express-validator');
-const myValidationResult = validationResult.withDefaults({
-  formatter: (error) => error.msg,
-});
-const fs = require('fs');
+﻿const {
+  getFolders,
+  getFolderId,
+  createFile,
+  findFile,
+  findFolderByFile,
+  getFiles,
+  removeFile,
+  checkFile,
+} = require('../prisma/queries');
 
+const fs = require('fs');
 const { promisify } = require('util');
 const unlinkAsync = promisify(fs.unlink);
 
-require('dotenv').config();
-
-const { createClient } = require('@supabase/supabase-js');
-
-const supabaseUrl = 'https://dntzvugzbvhuxqjtmuss.supabase.co';
-const supabaseKey = process.env.SUPABASE_KEY;
-const supabase = createClient(supabaseUrl, supabaseKey);
-
-const { PrismaClient } = require('@prisma/client');
-
-const prisma = new PrismaClient();
-
-const { data, error } = supabase.storage.createBucket('avatars', {
-  public: true,
-  allowedMimeTypes: ['image/*'],
-  fileSizeLimit: '1MB',
-});
+const { upload, getPublicUrl } = require('../storage/provider');
 
 async function renderUploadFileForm(req, res) {
   const message = '';
-  const folders = await prisma.folder.findMany({
-    where: {
-      ownerId: req.user.id,
-    },
-  });
+  const folders = await getFolders(req.user.id);
   try {
     res.render('files/upload-file', {
       user: req.user,
@@ -44,109 +30,53 @@ async function renderUploadFileForm(req, res) {
 }
 
 async function uploadFile(req, res) {
-  //console.log(req.file);
-  let { file_folder } = req.body;
-  //file_folder = file_folder.toLowerCase();
+  const { file_folder } = req.body;
+  const folders = await getFolders(req.user.id);
+
   const file = req.file;
 
   if (!file) {
     return res.status(400).send('No file uploaded.');
   }
 
-  const { originalname, mimetype, size, buffer } = file;
+  const { originalname, mimetype, path, size } = file;
 
-  //const filePath = path.join(file_folder, file.originalname);
+  const check = await checkFile(originalname, req.user.id);
+  if (check === null) {
+    try {
+      await upload(originalname, mimetype, path);
+    } catch (e) {
+      console.log(e);
+    }
 
-  // Check if the bucket exists and create it if it doesn't
-  /*   const { data: bucketData, error: bucketError } =
-    await supabase.storage.createBucket(file_folder, {
-      public: true,
-    });
-
-  if (bucketError && bucketError.message !== "The resource already exists") {
-    return res.status(500).send(bucketError.message);
-  } */
-
-  const { data, error } = await supabase.storage
-    .from('test')
-    .upload(file.originalname, fs.createReadStream(file.path), {
-      cacheControl: '3600',
-      contentType: mimetype,
-      upsert: false,
-      duplex: 'half',
-    });
-
-  if (error) {
-    return res.status(500).send(error.message);
-  }
-
-  const fileUrl = `${supabaseUrl}/storage/v1/object/public/test/${file.originalname}`;
-  //console.log(fileUrl);
-
-  const publicUrl = await getPublicUrl(file.originalname);
-
-  //console.log(publicUrl);
-
-  const folder = await prisma.folder.findUnique({
-    where: {
-      name_ownerId: {
-        name: file_folder,
-        ownerId: req.user.id,
-      },
-    },
-  });
-
-  const files = await prisma.file.findMany({
-    where: {
-      folderId: folder.id,
-    },
-  });
-
-  const newFile = await prisma.file.create({
-    data: {
-      name: file.originalname,
-      size: file.size,
-      url: publicUrl,
-      folderId: folder.id,
-      ownerId: req.user.id,
-    },
-  });
-
-  await unlinkAsync(req.file.path);
-  const folders = await prisma.folder.findMany({
-    where: {
-      ownerId: req.user.id,
-    },
-  });
-  try {
+    try {
+      const publicUrl = await getPublicUrl(originalname);
+      const folderId = await getFolderId(file_folder, req.user.id);
+      await createFile(originalname, size, publicUrl, folderId, req.user.id);
+      await unlinkAsync(path);
+      res.render('files/upload-file', {
+        user: req.user,
+        folders: folders,
+        message: 'File uploaded successfully!',
+      });
+    } catch (e) {
+      console.log(e);
+      res.redirect('/');
+    }
+  } else {
     res.render('files/upload-file', {
       user: req.user,
       folders: folders,
-      message: 'File uploaded successfully!',
+      message: 'File already exists!',
     });
-  } catch {
-    res.redirect('/');
   }
-}
-
-async function getPublicUrl(filename) {
-  const { data } = supabase.storage.from('test').getPublicUrl(filename);
-
-  return data.publicUrl;
 }
 
 async function showFileInfo(req, res) {
   const fileId = parseInt(req.params.id);
-  const file = await prisma.file.findUnique({
-    where: {
-      id: fileId,
-    },
-  });
-  const folder = await prisma.folder.findUnique({
-    where: {
-      id: file.folderId,
-    },
-  });
+  const file = await findFile(fileId);
+  const folder = await findFolderByFile(file.folderId);
+
   try {
     res.render('files/file', {
       user: req.user,
@@ -158,8 +88,32 @@ async function showFileInfo(req, res) {
   }
 }
 
+async function deleteFile(req, res) {
+  const fileId = parseInt(req.params.id);
+  const file = await findFile(fileId);
+  const folder = await findFolderByFile(file.folderId);
+  try {
+    await removeFile(fileId);
+    const files = await getFiles(folder.id);
+    res.render('folders/folder', {
+      folder: folder,
+      files: files,
+      user: req.user,
+    });
+  } catch {
+    const file = await findFile(fileId);
+    res.render('files/file', {
+      user: req.user,
+      file: file,
+      folder: folder,
+      errorMessage: 'Error deliting File',
+    });
+  }
+}
+
 module.exports = {
   renderUploadFileForm,
   uploadFile,
   showFileInfo,
+  deleteFile,
 };

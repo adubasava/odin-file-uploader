@@ -9,9 +9,9 @@
 </div>   
 
 <% if (files.length > 0) { %>
-  <p class="mt-4 text-center">Files in Folder</p>
+  <p class="mt-4 text-center ">Files in Folder</p>
       <% files.forEach(file => { %>
-        <div class="m-6 flex items-center">
+        <div class="m-6 flex items-center text-xl">
           <table class="border-separate border-spacing-6 border border-primary-ligth w-full mt-3 mb-3 ml-6 mr-6">    
             <tr>
               <td><a class="text-link" href="/files/<%= file.id %>"><%= file.name %></a></td>

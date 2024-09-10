@@ -1,21 +1,13 @@
 ﻿const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
 const bcrypt = require('bcryptjs');
-const { Pool } = require('pg');
-
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-});
+const { findUserByEmail, findUserById } = require('../prisma/queries');
 
 const strategy = new LocalStrategy(
   { usernameField: 'email', passwordField: 'password' },
   async (email, password, done) => {
     try {
-      const { rows } = await pool.query(
-        'SELECT * FROM users WHERE email = $1',
-        [email],
-      );
-      const user = rows[0];
+      const user = await findUserByEmail(email);
 
       if (!user) {
         return done(null, false, { message: 'Wrong email!' });
@@ -41,10 +33,7 @@ passport.serializeUser((user, done) => {
 
 passport.deserializeUser(async (id, done) => {
   try {
-    const { rows } = await pool.query('SELECT * FROM users WHERE id = $1', [
-      id,
-    ]);
-    const user = rows[0];
+    const user = await findUserById(id);
     done(null, user);
   } catch (err) {
     done(err);

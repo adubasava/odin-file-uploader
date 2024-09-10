@@ -45,7 +45,7 @@ model Folder {
 
 model File {
   id         Int      @id @default(autoincrement())
-  name       String
+  name       String   
   size       Int
   url        String
   uploadTime DateTime @default(now())
@@ -54,5 +54,6 @@ model File {
   owner      User     @relation(fields: [ownerId], references: [id])
   ownerId    Int
 
+  @@unique([name, ownerId])
   @@map("files")
 }

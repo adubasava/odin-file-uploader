@@ -896,6 +896,9 @@ select {
 .gap-3 {
   gap: 0.75rem;
 }
+.self-start {
+  align-self: flex-start;
+}
 .overflow-hidden {
   overflow: hidden;
 }
@@ -918,6 +921,10 @@ select {
 .border-primary-ligth {
   --tw-border-opacity: 1;
   border-color: hsl(3 35% 82% / var(--tw-border-opacity));
+}
+.border-white {
+  --tw-border-opacity: 1;
+  border-color: rgb(255 255 255 / var(--tw-border-opacity));
 }
 .bg-gray-50 {
   --tw-bg-opacity: 1;

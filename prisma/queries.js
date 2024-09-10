@@ -13,6 +13,24 @@ async function createUser(email, hashedPassword) {
   return user;
 }
 
+async function findUserByEmail(email) {
+  const user = await prisma.user.findUnique({
+    where: {
+      email: email,
+    },
+  });
+  return user;
+}
+
+async function findUserById(id) {
+  const user = await prisma.user.findUnique({
+    where: {
+      id: id,
+    },
+  });
+  return user;
+}
+
 // FOLDERS
 
 async function getFolders(ownerId) {
@@ -20,6 +38,11 @@ async function getFolders(ownerId) {
     where: {
       ownerId: ownerId,
     },
+    orderBy: [
+      {
+        name: 'asc',
+      },
+    ],
   });
 
   return folders;
@@ -32,6 +55,16 @@ async function findFolder(folderName, ownerId) {
         name: folderName,
         ownerId: ownerId,
       },
+    },
+  });
+
+  return folder;
+}
+
+async function findFolderByFile(fileFolderId) {
+  const folder = await prisma.folder.findUnique({
+    where: {
+      id: fileFolderId,
     },
   });
 
@@ -91,18 +124,73 @@ async function getFiles(folderId) {
     where: {
       folderId: folderId,
     },
+    orderBy: [
+      {
+        uploadTime: 'desc',
+      },
+    ],
   });
 
   return files;
 }
 
+async function findFile(fileId) {
+  const file = await prisma.file.findUnique({
+    where: {
+      id: fileId,
+    },
+  });
+
+  return file;
+}
+
+async function checkFile(fileName, ownerId) {
+  const file = await prisma.file.findUnique({
+    where: {
+      name_ownerId: {
+        name: fileName,
+        ownerId: ownerId,
+      },
+    },
+  });
+
+  return file;
+}
+
+async function createFile(originalname, size, publicUrl, folderId, ownerId) {
+  await prisma.file.create({
+    data: {
+      name: originalname,
+      size: size,
+      url: publicUrl,
+      folderId: folderId,
+      ownerId: ownerId,
+    },
+  });
+}
+
+async function removeFile(fileId) {
+  await prisma.file.delete({
+    where: {
+      id: fileId,
+    },
+  });
+}
+
 module.exports = {
   createUser,
+  findUserByEmail,
+  findUserById,
   getFolders,
   findFolder,
+  findFolderByFile,
   getFolderId,
   createFolder,
   updateFolder,
   removeFolder,
   getFiles,
+  findFile,
+  checkFile,
+  createFile,
+  removeFile,
 };

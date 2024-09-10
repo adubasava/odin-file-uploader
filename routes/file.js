@@ -1,17 +1,15 @@
-﻿const express = require("express");
+﻿const express = require('express');
 const router = express.Router();
-const { PrismaClient } = require("@prisma/client");
-const multer = require("multer");
+const multer = require('multer');
 
-const upload = multer({ dest: "uploads/" });
+const upload = multer({ dest: 'uploads/' });
 
-const prisma = new PrismaClient();
+const fileController = require('../controllers/fileController');
 
-const fileController = require("../controllers/fileController");
+router.get('/', fileController.renderUploadFileForm);
+router.post('/', upload.single('uploaded_file'), fileController.uploadFile);
 
-router.get("/", fileController.renderUploadFileForm);
-router.post("/", upload.single("uploaded_file"), fileController.uploadFile);
-
-router.get("/:id", fileController.showFileInfo);
+router.get('/:id', fileController.showFileInfo);
+router.post('/:id/delete', fileController.deleteFile);
 
 module.exports = router;

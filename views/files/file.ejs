@@ -1,19 +1,37 @@
-﻿<h2 class="page-header"><%= file.name %></h2>
-<h2 class="page-header"><%= file.size %></h2>
-<h2 class="page-header"><%= file.uploadTime.toLocaleString() %></h2>
+﻿<p class="mt-4 text-center">File Information</p>
+<div class="flex w-full items-center justify-center overflow-hidden text-xl">
+  <table class="border-separate border-spacing-6 border border-white">
+    <tr>
+      <td class="font-bold">File name</td>
+      <td><%= file.name %></td>
+    </tr>
+    <tr>
+      <td class="font-bold">File size</td>
+      <td><%= Math.floor(file.size/1000) %> Kb</td>
+    </tr>
+    <tr>
+      <td class="font-bold">Upload time</td>
+      <td><%= file.uploadTime.toLocaleString() %></td>
+    </tr>
+  </table>
+</div>
 
-<a
-  class="btn btn-primary"
-  download="<%= file.name %>"
-  href="<%= file.url %>"
-  target="_blank"
-  >Download</a
->
-
-<div class="tour-details-btn-grid">
+<div class="flex items-center justify-center">
   <a
-    class="btn btn-info tour-details-category-btn"
-    href="/folders/<%= folder.name %>"
-    >Back to All Folders
-  </a>
+    class="btn"
+    download="<%= file.name %>"
+    href="<%= file.url %>"
+    target="_blank"
+    >Download</a
+  >
+  <form method="POST" action="/files/<%= file.id %>/delete">
+    <button
+      class="btn delete"
+      type="submit"
+      onclick="return confirm('Are you sure?')"
+    >
+      Delete
+    </button>
+  </form>
+  <a class="btn" href="/folders">Back to All Folders</a>
 </div>
