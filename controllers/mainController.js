@@ -4,11 +4,12 @@ const myValidationResult = validationResult.withDefaults({
   formatter: (error) => error.msg,
 });
 
-const { createUser } = require('../prisma/queries');
+const { createUser, getFolders } = require('../prisma/queries');
 
 async function renderIndexPage(req, res) {
   try {
-    res.render('index', { user: req.user });
+    const folders = await getFolders(req.user.id);
+    res.render('index', { user: req.user, folders: folders });
   } catch {
     res.redirect('/');
   }

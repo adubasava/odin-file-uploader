@@ -19,11 +19,12 @@
 <div class="flex items-center justify-center">
   <a
     class="btn"
-    download="<%= file.name %>"
     href="<%= file.url %>"
-    target="_blank"
-    >Download</a
+    onclick="downloadFile(event, '<%= file.url %>', '<%= file.name %>')"
   >
+    Download
+  </a>
+
   <form method="POST" action="/files/<%= file.id %>/delete">
     <button
       class="btn delete"
@@ -35,3 +36,29 @@
   </form>
   <a class="btn" href="/folders">Back to All Folders</a>
 </div>
+
+<script>
+  function downloadFile(event, url, filename) {
+    event.preventDefault();
+    const xhr = new XMLHttpRequest();
+    xhr.open('GET', url, true);
+    xhr.responseType = 'blob';
+    xhr.onload = function () {
+      if (xhr.status === 200) {
+        const blob = xhr.response;
+        const link = document.createElement('a');
+        link.href = window.URL.createObjectURL(blob);
+        link.download = filename;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      } else {
+        console.error('Error downloading file:', xhr.statusText);
+      }
+    };
+    xhr.onerror = function () {
+      console.error('Network error while downloading file');
+    };
+    xhr.send();
+  }
+</script>

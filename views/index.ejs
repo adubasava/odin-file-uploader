@@ -1,5 +1,24 @@
 ﻿<% if (user) {%>
-    <h1 class="text-center mt-2">Welcome, <span class="text-link"><%= user.email %>!</span></h1>    
+  <p class="mt-4 text-center">Welcome, <span class="text-link"><%= user.email %>!</span></p> 
+    
+    <p class="mt-4 text-center">Folders</p> 
+    <div class="m-auto w-full">
+      <% if (folders.length === 0) { %>
+        <p class="mt-4 text-center">You have no folders yet. <a href="/folders/new" class="text-link">Create</a> one!</p>  
+        <% } %>    
+        <div class="mt-6 ml-6 flex items-center justify-center">
+          <table class="border-separate border-spacing-6 border border-primary-ligth">
+            <% folders.forEach(folder => { %>
+            <tr>
+              <td><a class="text-link" href="/folders/<%= folder.name %>"><%= folder.name %></a></td>
+              <td><a class="btn view" href="/folders/<%= folder.name %>">View</a></td>
+              <td><a class="btn edit" href="/folders/<%= folder.name %>/edit">Edit</a></td>
+              <td><a class="btn delete" href="/folders/<%= folder.name %>/delete">Delete</a></td>
+            </tr>
+            <% }) %>
+          </table>
+        </div>   
+    </div>
   <% } else { %>
     <h1 class="text-center p-4"><a href="/log-in" class="text-link">Log in</a> or <a href="/register" class="text-link">Register</a> to get all functionality</h1>  
     
