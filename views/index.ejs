@@ -1,6 +1,6 @@
 ﻿<% if (user) {%>
-    <h1 class="text-center mt-2">Welcome, <span class="text-primary font-bold"><%= user.email %>!</span></h1>    
+    <h1 class="text-center mt-2">Welcome, <span class="text-link"><%= user.email %>!</span></h1>    
   <% } else { %>
-    <h1 class="text-center p-4"><a href="/log-in">Log in</a> to see more</h1>  
+    <h1 class="text-center p-4"><a href="/log-in" class="text-link">Log in</a> or <a href="/register" class="text-link">Register</a> to get all functionality</h1>  
     
   <%}%>

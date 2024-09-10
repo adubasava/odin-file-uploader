@@ -1,30 +1,79 @@
-﻿<div class="m-auto w-full max-w-xs">
-  <form
-    action="/upload"
-    method="POST"
-    class="form"
-    enctype="multipart/form-data"
-  >
-    <div class="mb-4">
-      <label class="label" for="file_folder">Choose folder:</label>
-      <select name="file_folder" id="file_folder">      
-      <% folders.forEach(folder => { %>
-        <option value="<%= folder.name %>"><%= folder.name %></option>       
-      <% }) %> 
-      </select>
-    </div>
-    <div class="mb-4">
-      <label class="label" for="uploaded_file">Choose file:</label>
-      <input
-        class="input"
-        id="uploaded_file"
-        name="uploaded_file"
-        type="file"
-        required
-      />
-    </div>
-    <div class="flex items-center justify-center">
-      <button class="btn" type="submit">Upload</button>
-    </div>
-  </form>
-</div>
+﻿<% if (folders.length === 0) { %>
+  <p class="mt-4 text-center">You have no folders yet. <a href="/folders/new" class="text-link">Create</a> one first!</p>  
+  <% } else { %>  
+  <p id="message" class="mt-4 text-center text-primary-green"><%= message %></p>  
+  <p class="mt-4 text-center">Upload File</p>  
+  <div class="m-auto w-full">    
+    <form
+      action="/upload"
+      method="POST"
+      class="form"
+      enctype="multipart/form-data"
+    >
+      <div class="mb-4">
+        <label class="label" for="file_folder">Choose folder:</label>
+        <select name="file_folder" id="file_folder">      
+        <% folders.forEach(folder => { %>
+          <option value="<%= folder.name %>"><%= folder.name %></option>       
+        <% }) %> 
+        </select>
+      </div>
+      <div class="mb-4">
+        <label class="label" for="uploaded_file">Choose file:</label>        
+      </div>
+
+      <div class="flex items-center justify-center w-full overflow-hidden">
+        <label for="uploaded_file" class="flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600">
+            <div id="upload-info" class="flex flex-col items-center justify-center pt-5 pb-6">
+                <svg class="w-8 h-8 mb-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 16">
+                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"/>
+                </svg>
+                <p id="info" class="mb-2 text-sm text-gray-500 dark:text-gray-400"><span class="font-semibold">Click to upload</span> or drag and drop</p>
+                <p id="details" class="text-xs text-gray-500 dark:text-gray-400">(MAX. 1Mb)</p>
+                
+            </div>
+            <p id="file-name" class="text-xs text-gray-500 dark:text-gray-400 text-center "></p>
+            <img id="uploaded-image" class="hidden max-h-64 w-auto" />
+            <input id="uploaded_file" name="uploaded_file" type="file" class="hidden" onchange="displayFile()" required/>
+        </label>
+      </div> 
+
+      <div class="flex items-center justify-center">
+        <button class="btn" type="submit">Upload</button>
+      </div>
+    </form>
+  </div>
+<% } %> 
+
+<script>
+  function displayFile() {
+    const input = document.getElementById('uploaded_file');
+    const file = input.files[0];
+    const fileNameElement = document.getElementById('file-name');
+    const imageElement = document.getElementById('uploaded-image');
+    const uploadInfo = document.getElementById('upload-info');
+    const message = document.getElementById('message');
+    
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        if (file.type.startsWith('image/')) {
+          imageElement.src = e.target.result;
+          imageElement.classList.remove('hidden');
+          fileNameElement.textContent = '';
+        } else {
+          fileNameElement.textContent = `Selected file: ${file.name}`;
+          imageElement.classList.add('hidden');
+        }
+        uploadInfo.style.display = 'none';
+        message.style.display = 'none';
+      };
+      reader.onerror = function(error) {
+        console.error('Error reading file:', error);
+      };
+      reader.readAsDataURL(file);
+    } else {
+      console.log('No file selected');
+    }
+  }
+  </script>

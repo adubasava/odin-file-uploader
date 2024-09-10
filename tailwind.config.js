@@ -9,9 +9,15 @@ module.exports = {
       colors(theme) {
         return {
           primary: {
-            DEFAULT: 'hsl(263, 55%, 52%)',
-            dark: 'hsl(217, 19%, 35%)',
-            blackish: 'hsl(219, 29%, 14%)',
+            DEFAULT: 'hsl(10, 38%, 56%)',
+            dark: 'hsl(10, 28%, 31%)',
+            blackish: 'hsl(3, 27%, 34%)',
+            congo: 'hsl(3, 27%, 34%)',
+            ligth: 'hsl(3, 35%, 82%)',
+            green: 'hsl(136, 45%, 30%)',
+            greenligth: 'hsl(134, 50%, 85%)',
+            red: 'hsl(356, 53%, 42%)',
+            redligth: 'hsl(4, 61%, 90%)',
           },
           gray: {
             ...theme.colors.gray,

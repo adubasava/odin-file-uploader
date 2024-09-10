@@ -1,13 +1,13 @@
-﻿<h2 class="page-header">New Folder</h2>
-<form method="POST" action="/folders/new">
-  <div class="form-row">
-    <div class="form-item">
-      <label for="name">Folder name: </label>
-      <input id="name" type="text" name="name" required />
+﻿<p class="mt-4 text-center">Create New Folder</p>
+<div class="m-auto w-full max-w-sm">
+  <form method="POST" action="/folders/new" class="form">
+    <div class="mb-4">
+      <label for="name" class="label">Folder Name: </label>
+      <input id="name" type="text" name="name" class="input" required />
     </div>
-  </div>
-  <div class="form-row form-row-end btn-row">
-    <a class="btn btn-danger" href="/folders">Cancel</a>
-    <button class="btn btn-primary" type="submit">Create</button>
-  </div>
-</form>
+    <div class="flex items-center justify-center">
+      <a class="btn cancel" href="/folders">Cancel</a>
+      <button class="btn" type="submit">Create</button>
+    </div>
+  </form>
+</div>

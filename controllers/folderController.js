@@ -1,59 +1,52 @@
-﻿const { validationResult } = require("express-validator");
-const { PrismaClient } = require("@prisma/client");
-
-const prisma = new PrismaClient();
+﻿const { validationResult } = require('express-validator');
+const {
+  getFolders,
+  createFolder,
+  findFolder,
+  getFiles,
+  updateFolder,
+  removeFolder,
+  getFolderId,
+} = require('../prisma/queries');
 
 async function browseFolders(req, res) {
   try {
-    const folders = await prisma.folder.findMany({
-      where: {
-        ownerId: req.user.id,
-      },
-    });
-    res.render("folders/index", { folders: folders, user: req.user });
+    const folders = await getFolders(req.user.id);
+    res.render('folders/index', { folders: folders, user: req.user });
   } catch {
-    res.redirect("/");
+    res.redirect('/');
   }
 }
 
 async function newFolderForm(req, res) {
   try {
-    res.render("folders/new", { user: req.user });
+    res.render('folders/new', { user: req.user });
   } catch {
-    res.redirect("/folders");
+    res.redirect('/folders');
   }
 }
 
 async function createNewFolder(req, res) {
-  const errors = validationResult(req);
   const folderName = req.body.name;
+  const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    return res.render("folders/new", {
+    return res.render('folders/new', {
       name: folderName,
-      errorMessage: errors.mapped()["name"].msg,
+      errorMessage: errors.mapped()['name'].msg,
       user: req.user,
     });
   }
   try {
-    const folder = await prisma.folder.create({
-      data: {
-        name: folderName,
-        ownerId: req.user.id,
-      },
-    });
-    const folders = await prisma.folder.findMany({
-      where: {
-        ownerId: req.user.id,
-      },
-    });
-    res.render("folders/index", {
+    await createFolder(folderName, req.user.id);
+    const folders = await getFolders(req.user.id);
+    res.render('folders/index', {
       folders: folders,
       user: req.user,
     });
   } catch {
-    res.render("folders/new", {
+    res.render('folders/new', {
       name: folderName,
-      errorMessage: "Error creating Folder. Folder names must be unique!",
+      errorMessage: 'Error creating Folder. Folder names must be unique!',
       user: req.user,
     });
   }
@@ -61,45 +54,25 @@ async function createNewFolder(req, res) {
 
 async function renderFolder(req, res) {
   const folderName = req.params.id;
-  const folder = await prisma.folder.findUnique({
-    where: {
-      name_ownerId: {
-        name: folderName,
-        ownerId: req.user.id,
-      },
-    },
-  });
-  const files = await prisma.file.findMany({
-    where: {
-      folderId: folder.id,
-    },
-  });
   try {
-    const folder = await prisma.folder.findUnique({
-      where: {
-        name_ownerId: {
-          name: folderName,
-          ownerId: req.user.id,
-        },
-      },
-    });
-    res.render("folders/folder", {
+    const folder = await findFolder(folderName, req.user.id);
+    const files = await getFiles(folder.id);
+    res.render('folders/folder', {
       folder: folder,
       files: files,
       user: req.user,
     });
-  } catch (e) {
-    console.log(e);
-    res.redirect("/");
+  } catch {
+    res.redirect('/');
   }
 }
 
 async function editFolderForm(req, res) {
+  const name = req.params.id;
   try {
-    const name = req.params.id;
-    res.render("folders/edit", { name: name, user: req.user });
+    res.render('folders/edit', { name: name, user: req.user });
   } catch {
-    res.redirect("/folders");
+    res.redirect('/folders');
   }
 }
 
@@ -108,81 +81,60 @@ async function editFolder(req, res) {
   const newName = req.body.name;
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    return res.render("folders/edit", {
+    return res.render('folders/edit', {
       name: oldName,
-      errorMessage: errors.mapped()["name"].msg,
+      errorMessage: errors.mapped()['name'].msg,
       user: req.user,
     });
   }
   try {
     if (newName !== oldName) {
-      await prisma.folder.update({
-        where: {
-          name_ownerId: {
-            name: oldName,
-            ownerId: req.user.id,
-          },
-        },
-        data: {
-          name: newName,
-        },
-      });
+      await updateFolder(oldName, req.user.id, newName);
     }
-    const folder = await prisma.folder.findUnique({
-      where: {
-        name_ownerId: {
-          name: newName,
-          ownerId: req.user.id,
-        },
-      },
-    });
-    res.render("folders/folder", {
+    const folder = await findFolder(newName, req.user.id);
+    const files = await getFiles(folder.id);
+    res.render('folders/folder', {
       folder: folder,
       user: req.user,
+      files: files,
     });
   } catch {
-    res.render("folders/edit", {
+    res.render('folders/edit', {
       name: oldName,
-      errorMessage: "Error editing Folder",
+      errorMessage: 'Error editing Folder',
       user: req.user,
     });
   }
 }
 
 async function deleteFolderForm(req, res) {
+  const name = req.params.id;
   try {
-    const name = req.params.id;
-    res.render("folders/delete", { name: name, user: req.user });
+    res.render('folders/delete', { name: name, user: req.user });
   } catch {
-    res.redirect("/folders");
+    res.redirect('/folders');
   }
 }
 
 async function deleteFolder(req, res) {
   const folderName = req.params.id;
   try {
-    await prisma.folder.delete({
-      where: {
-        name_ownerId: {
-          name: folderName,
-          ownerId: req.user.id,
-        },
-      },
-    });
-    const folders = await prisma.folder.findMany({
-      where: {
-        ownerId: req.user.id,
-      },
-    });
-    res.render("folders/index", {
+    await removeFolder(folderName, req.user.id);
+    const folders = await getFolders(req.user.id);
+    res.render('folders/index', {
       folders: folders,
       user: req.user,
     });
-  } catch (e) {
-    console.log(e);
-    res.render("folders/index", {
+  } catch {
+    const folderId = await getFolderId(folderName, req.user.id);
+    const files = await getFiles(folderId);
+    const errorMessage = files
+      ? 'Cannot delete non-empty Folder!'
+      : 'Error deleting Folder!';
+    const folders = await getFolders(req.user.id);
+    res.render('folders/index', {
       folders: folders,
-      errorMessage: "Error deliting Folder",
+      errorMessage: errorMessage,
       user: req.user,
     });
   }

@@ -1,40 +1,45 @@
-﻿const { validationResult } = require("express-validator");
+﻿const { validationResult } = require('express-validator');
 const myValidationResult = validationResult.withDefaults({
   formatter: (error) => error.msg,
 });
-const fs = require("fs");
+const fs = require('fs');
 
-const { promisify } = require("util");
+const { promisify } = require('util');
 const unlinkAsync = promisify(fs.unlink);
 
-require("dotenv").config();
+require('dotenv').config();
 
-const { createClient } = require("@supabase/supabase-js");
+const { createClient } = require('@supabase/supabase-js');
 
-const supabaseUrl = "https://dntzvugzbvhuxqjtmuss.supabase.co";
+const supabaseUrl = 'https://dntzvugzbvhuxqjtmuss.supabase.co';
 const supabaseKey = process.env.SUPABASE_KEY;
 const supabase = createClient(supabaseUrl, supabaseKey);
 
-const { PrismaClient } = require("@prisma/client");
+const { PrismaClient } = require('@prisma/client');
 
 const prisma = new PrismaClient();
 
-const { data, error } = supabase.storage.createBucket("avatars", {
+const { data, error } = supabase.storage.createBucket('avatars', {
   public: true,
-  allowedMimeTypes: ["image/*"],
-  fileSizeLimit: "1MB",
+  allowedMimeTypes: ['image/*'],
+  fileSizeLimit: '1MB',
 });
 
 async function renderUploadFileForm(req, res) {
+  const message = '';
   const folders = await prisma.folder.findMany({
     where: {
       ownerId: req.user.id,
     },
   });
   try {
-    res.render("files/upload-file", { user: req.user, folders: folders });
+    res.render('files/upload-file', {
+      user: req.user,
+      folders: folders,
+      message: message,
+    });
   } catch {
-    res.redirect("/");
+    res.redirect('/');
   }
 }
 
@@ -45,7 +50,7 @@ async function uploadFile(req, res) {
   const file = req.file;
 
   if (!file) {
-    return res.status(400).send("No file uploaded.");
+    return res.status(400).send('No file uploaded.');
   }
 
   const { originalname, mimetype, size, buffer } = file;
@@ -63,12 +68,12 @@ async function uploadFile(req, res) {
   } */
 
   const { data, error } = await supabase.storage
-    .from("test")
+    .from('test')
     .upload(file.originalname, fs.createReadStream(file.path), {
-      cacheControl: "3600",
+      cacheControl: '3600',
       contentType: mimetype,
       upsert: false,
-      duplex: "half",
+      duplex: 'half',
     });
 
   if (error) {
@@ -91,6 +96,12 @@ async function uploadFile(req, res) {
     },
   });
 
+  const files = await prisma.file.findMany({
+    where: {
+      folderId: folder.id,
+    },
+  });
+
   const newFile = await prisma.file.create({
     data: {
       name: file.originalname,
@@ -102,16 +113,24 @@ async function uploadFile(req, res) {
   });
 
   await unlinkAsync(req.file.path);
-
+  const folders = await prisma.folder.findMany({
+    where: {
+      ownerId: req.user.id,
+    },
+  });
   try {
-    res.render("files/upload-file", { user: req.user, folders: folders });
+    res.render('files/upload-file', {
+      user: req.user,
+      folders: folders,
+      message: 'File uploaded successfully!',
+    });
   } catch {
-    res.redirect("/");
+    res.redirect('/');
   }
 }
 
 async function getPublicUrl(filename) {
-  const { data } = supabase.storage.from("test").getPublicUrl(filename);
+  const { data } = supabase.storage.from('test').getPublicUrl(filename);
 
   return data.publicUrl;
 }
@@ -129,13 +148,13 @@ async function showFileInfo(req, res) {
     },
   });
   try {
-    res.render("files/file", {
+    res.render('files/file', {
       user: req.user,
       file: file,
       folder: folder,
     });
   } catch {
-    res.redirect("/");
+    res.redirect('/');
   }
 }
 

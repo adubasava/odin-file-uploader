@@ -1,13 +1,20 @@
-﻿<h2 class="page-header">Edit Folder</h2>
-<form method="POST" action="/folders/<%= name %>/edit">
-  <div class="form-row">
-    <div class="form-item">
-      <label for="name">New folder name: </label>
-      <input id="name" type="text" name="name" value="<%= name %>" required />
+﻿<p class="mt-4 text-center">Edit Folder</p>
+<div class="m-auto w-full max-w-sm">
+  <form method="POST" action="/folders/<%= name %>/edit" class="form">
+    <div class="mb-4">
+      <label for="name" class="label">New folder name: </label>
+      <input
+        class="input"
+        id="name"
+        type="text"
+        name="name"
+        value="<%= name %>"
+        required
+      />
     </div>
-  </div>
-  <div class="form-row form-row-end btn-row">
-    <a class="btn btn-danger" href="/folders/<%= name %>">Cancel</a>
-    <button class="btn btn-primary" type="submit">Update</button>
-  </div>
-</form>
+    <div class="flex items-center justify-center">
+      <a class="btn cancel" href="/folders/<%= name %>">Cancel</a>
+      <button class="btn" type="submit">Update</button>
+    </div>
+  </form>
+</div>
