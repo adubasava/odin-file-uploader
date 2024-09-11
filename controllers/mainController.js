@@ -11,7 +11,7 @@ async function renderIndexPage(req, res) {
     const folders = await getFolders(req.user.id);
     res.render('index', { user: req.user, folders: folders });
   } catch {
-    res.redirect('/');
+    res.render('index', { user: req.user });
   }
 }
 
