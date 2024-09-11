@@ -3,9 +3,6 @@ module.exports = {
   content: ['./views/**/*.ejs'],
   theme: {
     extend: {
-      backgroundPosition: {
-        'right-top': 'right 2rem top',
-      },
       colors(theme) {
         return {
           primary: {
